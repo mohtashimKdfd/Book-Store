@@ -1,5 +1,3 @@
-
-from pyexpat import model
 from .models import Book, Seller
 from rest_framework import serializers
 
