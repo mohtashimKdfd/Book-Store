@@ -5,7 +5,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import Customer
 from .serializers import CustomerSerialize
 from rest_framework.decorators import api_view
-
+from seller.models import Book, Seller
+from seller.serializers import SellerSerializer , BookSerialize
 
 def home(request):
     customers = Customer.objects.all()
@@ -39,40 +40,37 @@ def login(request):
         if Customer.objects.filter(username=username).exists():
             targetCustomer = Customer.objects.get(username=username)
             if check_password(password,targetCustomer.password)==True:
-                # books_listed_by_seller = Book.objects.filter(sold_by = Customer.id)
-                # serialized_books = BookSerialize(many=True)
-                # return JsonResponse(serialized_books.data,status=201,safe=False)
-                return JsonResponse('Customer Logged In',status=201,safe=False)
+                books = Book.objects.all()
+                serialized = BookSerialize(books, many=True)
+                return JsonResponse(serialized.data, safe=False)
+
 
             else:
                 return JsonResponse('Wrong Password',status=404,safe=False)
         else:
             return JsonResponse('User does not exist',status=401,safe=False)
 
-    # elif request.method == "POST":
-    #     body_unicode = request.body.decode('utf-8')
-    #     body = json.loads(body_unicode)
-    #     username = body["username"]
-    #     password = body['password']
-    #     if Seller.objects.filter(username=username).exists():
-    #         targetSeller = Seller.objects.get(username=username)
-    #         if check_password(password,targetSeller.password)==True:
-    #             book_id = body['id']
-    #             sold_by = targetSeller
-    #             name = body['name']
-    #             author = body['author']
-    #             new = body['new']
-    #             price = body['price']
-
-    #             newBook = Book(id=book_id,name=name,author=author,new=new,price=price,sold_by=sold_by)
-    #             newBook.save()
-    #             # sendotp(name,targetSeller.contact_number)
-
-    #             books_listed_by_seller = Book.objects.filter(sold_by = targetSeller.id)
-    #             serialized_books = BookSerialize(books_listed_by_seller,many=True)
-    #             return JsonResponse(serialized_books.data,status=201,safe=False)
-
-    #         else:
-    #             return JsonResponse('Wrong Password',status=404,safe=False)
-    #     else:
-    #         return JsonResponse('User does not exist',status=401,safe=False)
+@api_view(['POST'])
+def buy(request):
+    if request.method=='POST':
+        body = json.loads(request.body.decode('utf-8'))
+        username = body['username']
+        password = body['password']
+        if Customer.objects.filter(username=username).exists():
+            targetCustomer = Customer.objects.get(username=username)
+            print(targetCustomer.password)
+            if check_password(password,targetCustomer.password)==True:
+                book_name = body['book_name']
+                if Book.objects.filter(name=book_name).exists():
+                    targetBook = Book.objects.get(name=book_name)
+                    targetCustomer.books_purchased.add(targetBook)
+                    
+                    Bookspurchased = targetCustomer.books_purchased
+                    serializedBooks = BookSerialize(Bookspurchased,many=True)
+                    return JsonResponse(serializedBooks.data,status=201,safe=False)
+                else:
+                    return JsonResponse('Book not found',safe=False,status=401)
+            else:
+                return JsonResponse("Wrong Password",safe=False,status=401)
+        else:
+            return JsonResponse('No User found || Try creating a new user')
