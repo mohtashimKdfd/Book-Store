@@ -12,7 +12,8 @@ def home(request):
     customers = Customer.objects.all()
     print(customers)
     serializedCustomer = CustomerSerialize(customers,many=True)
-    return JsonResponse(serializedCustomer.data,safe=False)
+    # return JsonResponse(serializedCustomer.data,safe=False)
+    return render(request,'customer/books.html')
 
 @api_view(['POST'])
 def signup(request):
