@@ -8,25 +8,23 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-    <div style="display: flex;flex-direction: row;gap:1em;flex-wrap: wrap;">
-        {% for i in books %}
-            <div class="card" style="width: 18rem; background-color:aliceblue">
+    <div style="display: flex;flex-direction: row;flex-wrap: wrap;gap:1em;">
+        {% for i in customers %}
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="https://www.pngplay.com/wp-content/uploads/7/Customer-Logo-Transparent-File.png" alt="Card image cap">
                 <div class="card-body">
-                <h5 class="card-title">{{ i.name }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ i.author }}</h6>
-                {% if i.new == True %}
-                    <h5 class="text-primary">New Edition</h5>
-                {% else %}
-                    <h5 class="text-primary">Old Edition</h5>
-                {% endif %}
-
+                    <h5 class="card-title center text-center">{{ i.username }}</h5>
+                    <h5 class="card-title text-center">{{ i.contact_number }}</h5>
                 </div>
+                <ul class="list-group list-group-flush" style="list-style: none;">
+                    <li class="text-center"><strong>Books Purchased</strong></li>
+                    {% for j in i.books_purchased %}
+                        <li class="list-group-item text-center">{{ j.name }}</li>
+                    {% endfor %}
+                </ul>
             </div>
-
         {% endfor %}
     </div>
-    
-
 
 
 

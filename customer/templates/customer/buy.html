@@ -8,11 +8,17 @@
 </head>
 <body>
 
-    <form action="{% url 'CustomerLogin' %}" method="POST">
+    <form action="{% url 'buy' %}" method="POST">
         {% csrf_token %}
 
         <input type="text" name="username" placeholder="Enter registered username">
         <input type="password" name="password" placeholder="Enter your password">
+        <select name="book_name" placeholder="Chose Book">
+            <option value="" disabled selected>Select your option</option>
+            {% for i in books %}
+                <option value="{{ i.name }}">{{ i.name }}</option>
+            {% endfor %}
+        </select>
         <input type="submit" value="Submit">
     </form>
 </body>

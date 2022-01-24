@@ -8,11 +8,12 @@
 </head>
 <body>
 
-    <form action="{% url 'CustomerLogin' %}" method="POST">
+    <form action="{% url 'CustomerSignup' %}" method="POST">
         {% csrf_token %}
 
         <input type="text" name="username" placeholder="Enter registered username">
         <input type="password" name="password" placeholder="Enter your password">
+        <input type="number" name="number" placeholder="Enter your number number">
         <input type="submit" value="Submit">
     </form>
 </body>

@@ -13,37 +13,40 @@ def home(request):
     print(customers)
     serializedCustomer = CustomerSerialize(customers,many=True)
     # return JsonResponse(serializedCustomer.data,safe=False)
-    return render(request,'customer/books.html')
+    return render(request,'customer/allcustomers.html',context={'customers':serializedCustomer.data})
 
-@api_view(['POST'])
+@api_view(['GET','POST'])
 def signup(request):
-    if request.method == 'POST':
-        request_body = json.loads(request.body.decode('utf-8'))
-        username = request_body['username']
-        password = request_body['password']
-        number = request_body['number']
+    if request.method == 'GET':
+        return render(request,'customer/signup.html')
+
+    elif request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        number = request.POST.get('number')
         if Customer.objects.filter(username=username).exists():
             return JsonResponse('User Already Exists || Try login',status=400,safe=False)
         
         newCustomer = Customer(username=username,password=make_password(password),contact_number=number)
         newCustomer.save()
 
-        return JsonResponse('Customer Account created',status=201,safe=False)
+        return render(request, 'customer/login.html')
 
 @api_view(['GET','POST'])
 def login(request):
     if request.method == 'GET':
         # print(request.body)
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        username = body["username"]
-        password = body['password']
+        return render(request, 'customer/login.html')
+    elif request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         if Customer.objects.filter(username=username).exists():
             targetCustomer = Customer.objects.get(username=username)
             if check_password(password,targetCustomer.password)==True:
-                books = Book.objects.all()
+                books = targetCustomer.books_purchased
                 serialized = BookSerialize(books, many=True)
-                return JsonResponse(serialized.data, safe=False)
+                # return JsonResponse(serialized.data, safe=False)
+                return render(request, 'customer/books.html',context={'books':serialized.data})
 
 
             else:
@@ -51,27 +54,31 @@ def login(request):
         else:
             return JsonResponse('User does not exist',status=401,safe=False)
 
-@api_view(['POST'])
+@api_view(['POST','GET'])
 def buy(request):
     if request.method=='POST':
-        body = json.loads(request.body.decode('utf-8'))
-        username = body['username']
-        password = body['password']
+        # body = json.loads(request.body.decode('utf-8'))
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         if Customer.objects.filter(username=username).exists():
             targetCustomer = Customer.objects.get(username=username)
             print(targetCustomer.password)
             if check_password(password,targetCustomer.password)==True:
-                book_name = body['book_name']
+                book_name = request.POST.get('book_name')
                 if Book.objects.filter(name=book_name).exists():
                     targetBook = Book.objects.get(name=book_name)
                     targetCustomer.books_purchased.add(targetBook)
                     
                     Bookspurchased = targetCustomer.books_purchased
                     serializedBooks = BookSerialize(Bookspurchased,many=True)
-                    return JsonResponse(serializedBooks.data,status=201,safe=False)
+                    return render(request, 'customer/books.html',context={'books':serializedBooks.data})
                 else:
                     return JsonResponse('Book not found',safe=False,status=401)
             else:
                 return JsonResponse("Wrong Password",safe=False,status=401)
         else:
             return JsonResponse('No User found || Try creating a new user')
+    elif request.method == 'GET':
+        books = Book.objects.all()
+        serializedBooks = BookSerialize(books,many=True)
+        return render(request,'customer/buy.html',context={'books':serializedBooks.data})
