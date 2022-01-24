@@ -7,7 +7,18 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
-<body>
+<body class='container-fluid'>
+
+    <header style="display: grid; grid-template-columns: 25% 25% 25% 25%; background-color:aliceblue; padding:1em" class="text-center">
+
+        <a href="{% url 'Customer' %}">Home</a>
+        <a href="{% url 'CustomerLogin' %}">Login</a>
+        <a href="{% url 'CustomerSignup' %}">Signup</a>
+        <a href="{% url 'buy' %}">Buy Now</a>
+
+    </header>
+
+
     <div style="display: flex;flex-direction: row;flex-wrap: wrap;gap:1em;">
         {% for i in customers %}
             <div class="card" style="width: 18rem;">

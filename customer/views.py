@@ -77,7 +77,7 @@ def buy(request):
             else:
                 return JsonResponse("Wrong Password",safe=False,status=401)
         else:
-            return JsonResponse('No User found || Try creating a new user')
+            return JsonResponse('No User found || Try creating a new user',safe=False,status=401)
     elif request.method == 'GET':
         books = Book.objects.all()
         serializedBooks = BookSerialize(books,many=True)
