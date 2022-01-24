@@ -14,7 +14,7 @@ class Book(models.Model):
     author = models.CharField(max_length=100)
     new = models.BooleanField(default=False)
     price = models.IntegerField()
-    sold_by =models.ForeignKey(Seller,on_delete=models.CASCADE) 
+    sold_by =models.ManyToManyField(Seller) 
 
     def __str__(self) -> str:
         return self.name

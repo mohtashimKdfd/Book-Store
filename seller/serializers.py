@@ -9,7 +9,7 @@ class SellerSerializer(serializers.ModelSerializer):
         fields = ['username']
 
 class BookSerialize(serializers.ModelSerializer):
-    sold_by = SellerSerializer(read_only=True)
+    sold_by = SellerSerializer(read_only=True,many=True)
     class Meta:
         model = Book
         fields = '__all__'
