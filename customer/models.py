@@ -9,6 +9,7 @@ class Customer(models.Model):
     password = models.CharField(max_length=100)
     books_purchased = models.ManyToManyField(Book)
     contact_number = models.IntegerField()
+    otp = models.IntegerField(null=True,blank=True)
     
     def __str__(self) -> str:
         return self.username

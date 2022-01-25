@@ -7,7 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
-<body>
+<body  class="container-fluid">
     <header style="display: grid; grid-template-columns: 25% 25% 25% 25%; background-color:aliceblue; padding:1em" class="text-center">
 
         <a href="{% url 'Customer' %}">Home</a>
@@ -16,7 +16,7 @@
         <a href="{% url 'buy' %}">Buy Now</a>
 
     </header>
-    <div style="display: flex;flex-direction: row;gap:1em;flex-wrap: wrap;">
+    <div style="display: flex;flex-direction: row;gap:1em;flex-wrap: wrap;padding: 1em;">
         {% for i in books %}
             <div class="card" style="width: 18rem; background-color:aliceblue">
                 <div class="card-body">

@@ -8,4 +8,5 @@ urlpatterns = [
     path('login',views.login,name='CustomerLogin'),
     path('buy',views.buy,name='buy'),
     # path('profile',views.profile,name='customerProfile')
+    path('otpverify',views.otpVerify,name='otpverify')
 ]

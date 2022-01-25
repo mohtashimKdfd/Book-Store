@@ -7,6 +7,7 @@ from .serializers import CustomerSerialize
 from rest_framework.decorators import api_view
 from seller.models import Book, Seller
 from seller.serializers import SellerSerializer , BookSerialize
+import random
 
 def home(request):
     customers = Customer.objects.all()
@@ -66,12 +67,16 @@ def buy(request):
             if check_password(password,targetCustomer.password)==True:
                 book_name = request.POST.get('book_name')
                 if Book.objects.filter(name=book_name).exists():
-                    targetBook = Book.objects.get(name=book_name)
-                    targetCustomer.books_purchased.add(targetBook)
+
+                    generatedOtp = random.randint(1999,9999)
+                    targetCustomer.otp = generatedOtp
+                    targetCustomer.save()
                     
-                    Bookspurchased = targetCustomer.books_purchased
-                    serializedBooks = BookSerialize(Bookspurchased,many=True)
-                    return render(request, 'customer/books.html',context={'books':serializedBooks.data})
+                    request.session['book']=book_name
+                    request.session['hello'] = 'hellop'
+                    
+                    return render(request,'customer/otp.html')
+
                 else:
                     return JsonResponse('Book not found',safe=False,status=401)
             else:
@@ -82,3 +87,28 @@ def buy(request):
         books = Book.objects.all()
         serializedBooks = BookSerialize(books,many=True)
         return render(request,'customer/buy.html',context={'books':serializedBooks.data})
+@api_view(['POST'])
+def otpVerify(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        otp_provided = request.POST.get('otp')
+        if Customer.objects.filter(username=username).exists():
+            targetCustomer = Customer.objects.get(username=username)
+            print(targetCustomer.otp)
+            print(otp_provided)
+            if int(otp_provided) == targetCustomer.otp:
+                if 'book' in request.session:
+                    book_name = request.session.get('book')
+                    targetBook = Book.objects.get(name=book_name)
+                    del request.session['book']
+                    targetCustomer.books_purchased.add(targetBook)
+                    
+                    Bookspurchased = targetCustomer.books_purchased
+                    serializedBooks = BookSerialize(Bookspurchased,many=True)
+                    return render(request, 'customer/books.html',context={'books':serializedBooks.data})
+                else:
+                    return JsonResponse('Book not found',safe=False,status=401)
+            else:
+                return JsonResponse('Otp not matched',safe=False,status=401)
+        else:
+            return JsonResponse('User not exists',safe=False,status=401)
